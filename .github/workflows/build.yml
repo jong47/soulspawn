@@ -25,8 +25,8 @@ jobs:
         python-version: "3.12"
     - name: Install dependencies
       run: |
+        conda init bash
         conda env create -f environment.yml
-        conda init zsh
         conda activate dc-bot-m
     - name: Test with pytest
       run: |
