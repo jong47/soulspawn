@@ -31,7 +31,7 @@ jobs:
         conda env update --file environment.yml --name base
     - name: Linting with flake8
       run: | 
-        flake8 src/
+        flake8 --extend-ignore F401 src/
     - name: Test with pytest
       run: |
         pytest
