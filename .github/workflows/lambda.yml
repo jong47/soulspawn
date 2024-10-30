@@ -64,7 +64,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-          output=$(python scripts/post_commands.py)
+          output=$(python src/scripts/post_commands.py)
           echo "::set-output name=publishStatus::$output"
       id: step1
     - name: Print status
