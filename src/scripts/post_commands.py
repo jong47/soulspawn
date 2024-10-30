@@ -32,9 +32,10 @@ s3 = boto3.client(
 
 
 def get_json(bucket, key):
-    res = s3.get_object(Bucket=bucket, Key=key)
+    
+    res = s3.Object(bucket, key)
     try:
-        text = res["Body"].read().decode()
+        text = res.get()["Body"].read().decode('utf-8')
     except Exception as e:
         print(f"err: no file found at {bucket}/{key}: {e}")
     return json.loads(text)
