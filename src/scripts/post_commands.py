@@ -23,13 +23,7 @@ HTTP_HEADER = {"Authorization": f"Bot {DISCORD_BOT_TOKEN}"}
 global_url = f"https://discord.com/api/v8/applications/{DISCORD_APPLICATION_ID}/commands"
 guild_urls = [f"https://discord.com/api/v8/applications/{DISCORD_APPLICATION_ID}/guilds/{test_server_id}/commands" for test_server_id in TEST_SERVERS]
 
-s3 = boto3.client(
-        "s3",             
-        aws_access_key_id=AWS_ACCESS_KEY_ID, 
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY, 
-        region_name=AWS_REGION
-)
-
+s3 = boto3.resource("s3")
 
 def get_json(bucket, key):
     
