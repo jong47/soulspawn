@@ -1,5 +1,5 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from alpaca.broker import BrokerClient
 
 BROKER_API_KEY = os.getenv("BROKER_API_KEY")
