@@ -4,8 +4,8 @@ import os
 import requests
 
 
-AWS_ACCESS_KEY_ID       = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY   = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID       = os.environ.get("AWS_IAM_USER_PK")
+AWS_SECRET_ACCESS_KEY   = os.environ.get("AWS_IAM_USER_SK")
 AWS_REGION              = os.environ.get("AWS_REGION")
 AWS_BUCKET              = os.environ.get("AWS_BUCKET")
 KEY                     = 'alpaca.json'
