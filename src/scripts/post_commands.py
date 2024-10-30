@@ -14,7 +14,7 @@ BROKER_API_KEY          = os.getenv("BROKER_API_KEY")
 BROKER_SECRET_KEY       = os.getenv("BROKER_SECRET_KEY")
 
 DISCORD_APPLICATION_ID  = os.getenv("DISCORD_APPLICATION_ID")
-DISCORD_CHANNEL_ID      = int(os.getenv("CHANNEL_ID"))
+DISCORD_CHANNEL_ID      = int(os.getenv("DISCORD_CHANNEL_ID"))
 DISCORD_BOT_TOKEN       = os.getenv("DISCORD_BOT_TOKEN")
 TEST_SERVERS            = json.loads(os.environ.get("TEST_SERVERS"))
 
