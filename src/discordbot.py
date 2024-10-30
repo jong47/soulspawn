@@ -9,7 +9,7 @@ class DiscordBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         load_dotenv("keys.env")
-        self._discord_token = os.getenv("DISCORD_TOKEN")
+        self._discord_token = os.getenv("DISCORD_BOT_TOKEN")
         self._channel_id = int(os.getenv("CHANNEL_ID"))
 
     async def setup_hook(self) -> None:

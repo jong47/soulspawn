@@ -1,0 +1,71 @@
+name: CI lambda
+
+on: # the trigger for this Action is whenever changes are pushed to the master branch
+  workflow_run:
+    workflows: ["build"]
+    types:
+      - completed
+  push:
+      branches: ["main"]
+
+jobs:
+  build: # "packages" the code/dependencies and puts it into AWS
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master # checks out the code; needed for the next step
+    - name: Deploy code to Lambda # uses https://github.com/mariamrf/py-lambda-action to upload the code checked out above into the specified lambda with the specified credentials. only supports python3.6
+      uses: mariamrf/py-lambda-action@v1.0.0
+      with:
+        lambda_layer_arn: 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:173' # can be an existing layer or a new layer, eg the arn can be "aws:lambda:us-east-2:<your account number>:layer:<any layer name>"
+        lambda_function_name: 'dc-bot-m-commands'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_USER_PK }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_USER_SK }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+    - name: Upload commands to S3  # uses https://github.com/tpaschalis/s3-cp-action to copy FILE into AWS_S3_BUCKET with the specified credentials
+      uses: tpaschalis/s3-sync-action@master
+      env:
+       FILE: ./commands/commands.json
+       AWS_REGION: ${{ secrets.AWS_REGION }}
+       AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET }}
+       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_USER_PK }}
+       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_USER_SK }}
+  publish: # publishes the contents of commands.json to TEST_SERVERS by running scripts/publish_commands.py with the specified environment variables
+    needs: build
+    if: needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        conda env update --file environment.yml --name base
+    - name: Linting with flake8
+      run: | 
+        flake8 --extend-ignore F401 src/
+    - name: Test with pytest
+      run: |
+        pytest
+        
+    - name: Publish slash commands to Discord
+      env: 
+        DISCORD_APPLICATION_ID: ${{ secrets.DISCORD_APPLICATION_ID }}
+        TEST_SERVERS: ${{ secrets.TEST_SERVERS }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+          output=$(python scripts/publish_commands.py)
+          echo "::set-output name=publishStatus::$output"
+      id: step1
+    - name: Print status
+      run: echo "${{ steps.step1.outputs.publishStatus }}"
