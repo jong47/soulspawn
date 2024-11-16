@@ -1,2 +1,7 @@
-# dc-bot-m
-You must store your PK in `keys.env`
+# To setup on local environment:
+```
+$ conda create --name soulspawn python=3.12
+$ conda activate soulspawn
+
+$ pip install -r requirements.txt
+```
